@@ -4,14 +4,27 @@ import rospy
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from autonav.srv import *
+from autonav.msg import cordinate
+
+x1 = 0.0
+y1 = 0.0
+z1 = 0.0 
+
+def callback(data):
+    global x1, y1, z1
+    x1 = data.x
+    y1 = data.y
+    z1 = data.z
+
+
 
 def get_distance(feedback):
     rospy.wait_for_service("calculate_distance")
     try:
         distance = rospy.ServiceProxy('calculate_distance', calculate_distance)
-        x1 = feedback.base_position.pose.position.x
-        y1 = feedback.base_position.pose.position.y
-        resp1 = distance(x1, y1, 0 , 0)
+        x2 = feedback.base_position.pose.position.x
+        y2 = feedback.base_position.pose.position.y
+        resp1 = distance(x1, y1, x2 , y2)
         return resp1.distance
     except rospy.ServiceException as e:
         print("Service call failed: %s" %e)
@@ -49,6 +62,11 @@ goal.target_pose.pose.orientation.x = 0.0
 goal.target_pose.pose.orientation.y = 0.0
 goal.target_pose.pose.orientation.z = 0.0
 goal.target_pose.pose.orientation.w = 1
+
+
+# Subscribe to get the initial position
+rospy.Subscriber('/robotinitialposition',cordinate,callback)
+
 
 navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
 finished = navclient.wait_for_result()

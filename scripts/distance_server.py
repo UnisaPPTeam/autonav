@@ -11,11 +11,11 @@ def handle_distance(req):
     print(f"The distance is {sqrt((req.x1 - req.x2)**2+(req.y1 - req.y2)**2)}")
     return calculate_distanceResponse(sqrt((req.x1 - req.x2)**2+(req.y1 - req.y2)**2))
 
-def add_distance_server():
+def calculate_distance_server():
     rospy.init_node("distance")
     s = rospy.Service('calculate_distance', calculate_distance, handle_distance)
     print("Waiting for coordinates")
     rospy.spin()
     
 if __name__ == "__main__":
-    add_distance_server()
+    calculate_distance_server()
