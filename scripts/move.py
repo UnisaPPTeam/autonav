@@ -3,15 +3,26 @@
 import rospy
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from autonav.srv import *
+
+def get_distance():
+    rospy.wait_for_service("calculate_distance")
+    try:
+        distance = rospy.ServiceProxy('calculate_distance', calculate_distance)
+        resp1 = distance(0, 0, 0 , 0)
+        return resp1.distance
+    except rospy.ServiceException as e:
+        print("Service call failed: %s" %e)
 
 #Callback definition
 def active_cb(extra):
     rospy.loginfo("Goal pose being processed")
 
 def feedback_cb(feedback):
-    rospy.loginfo("Current location: " + str(feedback))
+    #rospy.loginfo("Current location: " + str(feedback))
+    print(get_distance())
+    return
     
-
 def done_cb(status, result):
     if status == 3:
         rospy.loginfo("Goal reached")
