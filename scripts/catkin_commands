@@ -1,0 +1,9 @@
+catikin_init_workspace crea il workspace in una cartella src
+catkin_make crea le cartelle build e devel partendo dal makefile in src
+cd devel + source setup.sh aggiunge setup al system path
+catkin_make install compila e installa la binary
+catkin_create_pkg crea un package, il primo parametro è il nome del package poi ci sono le librerie necessarie per far funzionare il package, solitamente serveno almeno quelli per i linguaggi: roscpp e rospy
+catkin_create_pkg hello_world roscpp rospy std_msgs: crea un package chiamato hello_world con le librerie per python, c++ e la libreria standard dei messaggi
+mkdir scripts dentro al package per creare una cartella dove mettere i file python
+sudo chmod +x *.py , dice al OS che i file .py sono eseguibili
+ls -la, mostra tutti i file nella directory con annessi i permessi
