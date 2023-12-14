@@ -64,7 +64,7 @@ def main():
 
     print("subscribing to robot initial position")
     # Subscribe to get the initial position
-    data = rospy.wait_for_message('/ros', cordinate)
+    data = rospy.wait_for_message('/ros', cordinate, timeout=5)
     print("Starting position recieved from init node")
     global x1, y1, z1
     x1 = data.x
