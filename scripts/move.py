@@ -8,7 +8,6 @@ from autonav.msg import cordinate
 
 x1 = 0.0
 y1 = 0.0
-z1 = 0.0 
 
 def get_distance(feedback):
     rospy.wait_for_service("calculate_distance")
@@ -29,7 +28,7 @@ def active_cb(extra):
 
 def feedback_cb(feedback):
     #rospy.loginfo("Current location: " + str(feedback))
-    print(f"the current robot distance from the starting point is{get_distance(feedback)}")
+    print(f"the current robot distance from the starting point is {get_distance(feedback)}")
     return
     
 def done_cb(status, result):
@@ -39,8 +38,6 @@ def done_cb(status, result):
         rospy.loginfo("Goal cancelled")
     if status == 4:
         rospy.loginfo("Goal aborted")
-
-
 
 
 def main():
@@ -62,15 +59,13 @@ def main():
     goal.target_pose.pose.orientation.w = 1
 
 
-    print("subscribing to robot initial position")
-    # Subscribe to get the initial position
-    data = rospy.wait_for_message('/ros', cordinate, timeout=5)
-    print("Starting position recieved from init node")
+    print("getting the robot initial position")
+    data = rospy.get_param('initial_position')
     global x1, y1, z1
-    x1 = data.x
-    y1 = data.y
-    z1 = data.z
-    print(f"Starting position set:{x1},{y1},{z1}")
+    x1 = data['x']
+    y1 = data['y']
+  
+    print(f"Starting position set:{x1},{y1}")
     navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
     finished = navclient.wait_for_result()
 
@@ -81,6 +76,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
