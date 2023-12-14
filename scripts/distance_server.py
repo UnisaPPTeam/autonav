@@ -7,9 +7,12 @@ from autonav.srv import calculate_distance, calculate_distanceResponse
 
 import rospy
 
+def get_distance(x1, y1, x2, y2):
+    return sqrt((x1 - x2)**2+(y1 - y2)**2)
+
 def handle_distance(req):
-    print(f"The distance is {sqrt((req.x1 - req.x2)**2+(req.y1 - req.y2)**2)}")
-    return calculate_distanceResponse(sqrt((req.x1 - req.x2)**2+(req.y1 - req.y2)**2))
+    print(f"The distance is {get_distance(req.x1, req.y1, req.x2, req.y2)}")
+    return calculate_distanceResponse(get_distance(req.x1, req.y1, req.x2, req.y2))
 
 def calculate_distance_server():
     rospy.init_node("distance")

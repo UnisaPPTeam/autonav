@@ -25,10 +25,10 @@ def init_pose():
 
     rospy.loginfo("setting initial info")
     pub.publish(init_msg)
-    rospy.loginfo("initial pose set")
     # Save initial position to the parameter server
     initial_position = {'x':init_msg.pose.pose.position.x,'y':init_msg.pose.pose.position.y}
     rospy.set_param('initial_position',initial_position)
+    rospy.loginfo("initial pose set")
     
 if __name__ == "__main__":
     init_pose()

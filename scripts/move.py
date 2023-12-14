@@ -61,7 +61,7 @@ def main():
 
     print("getting the robot initial position")
     data = rospy.get_param('initial_position')
-    global x1, y1, z1
+    global x1, y1
     x1 = data['x']
     y1 = data['y']
   
