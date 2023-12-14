@@ -29,6 +29,7 @@ rospy.sleep(1)
 
 rospy.loginfo("setting initial info")
 pub.publish(init_msg)
-pub2.publish(initial_position)
 rospy.loginfo("initial pose set")
+rospy.loginfo("Sending initial position to distance server")
+pub2.publish(initial_position)
 

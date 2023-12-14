@@ -11,17 +11,19 @@ y1 = 0.0
 z1 = 0.0 
 
 def callback(data):
+    print("Starting position recieved from init node")
     global x1, y1, z1
     x1 = data.x
     y1 = data.y
     z1 = data.z
-
-
+    print(f"Starting position set:{x1},{y1},{z1}")
 
 def get_distance(feedback):
     rospy.wait_for_service("calculate_distance")
     try:
+        print("distance calculation service init")
         distance = rospy.ServiceProxy('calculate_distance', calculate_distance)
+        print("getting current node location")
         x2 = feedback.base_position.pose.position.x
         y2 = feedback.base_position.pose.position.y
         resp1 = distance(x1, y1, x2 , y2)
@@ -35,7 +37,7 @@ def active_cb(extra):
 
 def feedback_cb(feedback):
     #rospy.loginfo("Current location: " + str(feedback))
-    print(get_distance(feedback))
+    print(f"the current robot distance from the starting point is{get_distance(feedback)}")
     return
     
 def done_cb(status, result):
@@ -63,10 +65,9 @@ goal.target_pose.pose.orientation.y = 0.0
 goal.target_pose.pose.orientation.z = 0.0
 goal.target_pose.pose.orientation.w = 1
 
-
+print("subscribing to robot initial position")
 # Subscribe to get the initial position
-rospy.Subscriber('/robotinitialposition',cordinate,callback)
-
+rospy.Subscriber('/robotinitialposition', cordinate, callback)
 
 navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
 finished = navclient.wait_for_result()
