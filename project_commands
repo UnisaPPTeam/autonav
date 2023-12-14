@@ -1,6 +1,6 @@
 commands:
 SLAM: roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
 Save map: rosrun map_server map_saver -f ~/map
-start gazebo: roslaunch turtlebot3_gazebo turtlebot3_world.launch
+start gazebo: roslaunch turtlebot3_gazebo turtlebot3_house.launch
 start rviz: roslaunch turtlebot3_navigation turtlebot3_navigation.launch map_file:=$HOME/map.yaml
 set correct initial pose: rosrun autonav init_pose.py

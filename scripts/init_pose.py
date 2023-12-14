@@ -7,7 +7,7 @@ from autonav.msg import cordinate
 #Node initialization
 rospy.init_node('init_pose')
 pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=1)
-pub2 = rospy.Publisher('/robotinitialposition', cordinate, queue_size=1)
+pub2 = rospy.Publisher('/ros', cordinate, queue_size=1)
 
 # Construct message with the initial position
 init_msg = PoseWithCovarianceStamped()
@@ -30,6 +30,6 @@ rospy.sleep(1)
 rospy.loginfo("setting initial info")
 pub.publish(init_msg)
 rospy.loginfo("initial pose set")
-rospy.loginfo("Sending initial position to distance server")
+rospy.loginfo(f"Sending initial position to distance server:\n{initial_position}")
 pub2.publish(initial_position)
 

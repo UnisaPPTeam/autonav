@@ -10,14 +10,6 @@ x1 = 0.0
 y1 = 0.0
 z1 = 0.0 
 
-def callback(data):
-    print("Starting position recieved from init node")
-    global x1, y1, z1
-    x1 = data.x
-    y1 = data.y
-    z1 = data.z
-    print(f"Starting position set:{x1},{y1},{z1}")
-
 def get_distance(feedback):
     rospy.wait_for_service("calculate_distance")
     try:
@@ -48,34 +40,47 @@ def done_cb(status, result):
     if status == 4:
         rospy.loginfo("Goal aborted")
 
-rospy.init_node('goal_pose')
 
-navclient = actionlib.SimpleActionClient('move_base', MoveBaseAction)
-navclient.wait_for_server()
 
-goal = MoveBaseGoal()
-goal.target_pose.header.frame_id = "map"
-goal.target_pose.header.stamp = rospy.Time.now()
 
-goal.target_pose.pose.position.x = 3.25
-goal.target_pose.pose.position.y = 1.3
-goal.target_pose.pose.position.z = 0.0
-goal.target_pose.pose.orientation.x = 0.0
-goal.target_pose.pose.orientation.y = 0.0
-goal.target_pose.pose.orientation.z = 0.0
-goal.target_pose.pose.orientation.w = 1
+def main():
+    rospy.init_node('goal_pose')
 
-print("subscribing to robot initial position")
-# Subscribe to get the initial position
-rospy.Subscriber('/robotinitialposition', cordinate, callback)
+    navclient = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+    navclient.wait_for_server()
 
-navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
-finished = navclient.wait_for_result()
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "map"
+    goal.target_pose.header.stamp = rospy.Time.now()
 
-if not finished:
-    rospy.logerr("Action server not available")
-else:
-    rospy.loginfo(navclient.get_result())
+    goal.target_pose.pose.position.x = 3.25
+    goal.target_pose.pose.position.y = 1.3
+    goal.target_pose.pose.position.z = 0.0
+    goal.target_pose.pose.orientation.x = 0.0
+    goal.target_pose.pose.orientation.y = 0.0
+    goal.target_pose.pose.orientation.z = 0.0
+    goal.target_pose.pose.orientation.w = 1
+
+
+    print("subscribing to robot initial position")
+    # Subscribe to get the initial position
+    data = rospy.wait_for_message('/ros', cordinate)
+    print("Starting position recieved from init node")
+    global x1, y1, z1
+    x1 = data.x
+    y1 = data.y
+    z1 = data.z
+    print(f"Starting position set:{x1},{y1},{z1}")
+    navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
+    finished = navclient.wait_for_result()
+
+    if not finished:
+        rospy.logerr("Action server not available")
+    else:
+        rospy.loginfo(navclient.get_result())
+
+if __name__ == "__main__":
+    main()
 
 
 
