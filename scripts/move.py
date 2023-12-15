@@ -32,7 +32,7 @@ def get_distance(feedback):
         print("Service call failed: %s" %e)
 
 # Callback definition
-def active_cb(extra):
+def active_cb():
     rospy.loginfo("Goal pose being processed")
 
 def feedback_cb(feedback):
@@ -66,7 +66,6 @@ def navigate_to_room(room_name):
     else:
         rospy.logerr(f"Room '{room_name}' not found in the coordinate dictionary.")
         return
-
     goal.target_pose.pose.orientation.x = 0.0
     goal.target_pose.pose.orientation.y = 0.0
     goal.target_pose.pose.orientation.z = 0.0
@@ -79,6 +78,7 @@ def navigate_to_room(room_name):
     y1 = data['y']
   
     print(f"Starting position set: {x1},{y1}")
+    print(f"Goal set: {goal}")
     navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
     finished = navclient.wait_for_result()
 
