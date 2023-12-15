@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
 from math import  sqrt
 
 from autonav.srv import calculate_distance, calculate_distanceResponse
@@ -11,7 +10,6 @@ def get_distance(x1, y1, x2, y2):
     return sqrt((x1 - x2)**2+(y1 - y2)**2)
 
 def handle_distance(req):
-    print(f"The distance is {get_distance(req.x1, req.y1, req.x2, req.y2)}")
     return calculate_distanceResponse(get_distance(req.x1, req.y1, req.x2, req.y2))
 
 def calculate_distance_server():
