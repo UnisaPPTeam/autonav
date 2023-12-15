@@ -9,10 +9,10 @@ from autonav.msg import cordinate
 
 # Definisci un dizionario per le coordinate delle stanze
 stanze_coordinates = {
-    "cucina": {"x": 4.5, "y": -2.55, "z": 0.0},
+    "studio": {"x": 5.6, "y": -2.1, "z": 0.0},
     "salone": {"x": -4.45, "y": -0.45, "z": 0.0},
     "stanza_da_letto": {"x": 3.25, "y": 1.3, "z": 0.0},
-    "bagno": {"x": -0.15, "y": 2.9, "z": 0.0},
+    "bagno": {"x": -0.10, "y": 2.8, "z": 0.0},
 }
 
 x1 = 0.0
