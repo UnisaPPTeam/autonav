@@ -12,7 +12,7 @@ stanze_coordinates = {
     "cucina": {"x": 4.5, "y": -2.55, "z": 0.0},
     "salone": {"x": -4.45, "y": -0.45, "z": 0.0},
     "stanza_da_letto": {"x": 3.25, "y": 1.3, "z": 0.0},
-    "bagno": {"x": -0.15, "y": 2.9, "z": 0.0},
+    "bagno": {"x": 1.61, "y": 3.51, "z": 0.0},
 }
 
 x1 = 0.0
@@ -78,7 +78,6 @@ def navigate_to_room(room_name):
     y1 = data['y']
   
     print(f"Starting position set: {x1},{y1}")
-    print(f"Goal set: {goal}")
     navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
     finished = navclient.wait_for_result()
 
