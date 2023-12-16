@@ -20,3 +20,4 @@ def calculate_distance_server():
     
 if __name__ == "__main__":
     calculate_distance_server()
+    

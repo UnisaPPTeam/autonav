@@ -35,11 +35,12 @@ def active_cb():
 
 def feedback_cb(feedback):
     print(f"the current robot distance from the starting point is {get_distance(feedback)}")
-    position = coordinate()
-    position.x = feedback.base_position.pose.position.x
-    position.y = feedback.base_position.pose.position.y
-    position.z = feedback.base_position.pose.position.z
-    pub.publish(position)
+    if(pub.get_num_connections() > 0): 
+        position = coordinate()
+        position.x = feedback.base_position.pose.position.x
+        position.y = feedback.base_position.pose.position.y
+        position.z = feedback.base_position.pose.position.z
+        pub.publish(position)
     return
 
 def done_cb(status, result):
@@ -54,7 +55,9 @@ def navigate_to_room(room_name):
     rospy.init_node('goal_pose')
 
     navclient = actionlib.SimpleActionClient('move_base', MoveBaseAction)
-    navclient.wait_for_server()
+    got_server = navclient.wait_for_server(timeout=rospy.Duration(10))
+    if(not got_server):
+        rospy.logerr("Action server not available")
 
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "map"
@@ -83,10 +86,10 @@ def navigate_to_room(room_name):
     print(f"Starting position set: {x1},{y1}")
     navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
     
-    finished = navclient.wait_for_result(timeout=rospy.Duration(0.01))
+    finished = navclient.wait_for_result(timeout=rospy.Duration(150))
 
     if not finished:
-        rospy.logerr("Action server not available")
+        rospy.logerr("The robot couldn't reach its final location, either the path took too much time or the Action server went down")
     else:
         rospy.loginfo(navclient.get_result())
 
@@ -97,6 +100,6 @@ if __name__ == "__main__":
 
     room_name = sys.argv[1]
     
-    pub = rospy.Publisher('/robotinitialposition', coordinate, queue_size=30)
+    pub = rospy.Publisher('/robot_coordinates', coordinate, queue_size=1)
     
     navigate_to_room(room_name)
