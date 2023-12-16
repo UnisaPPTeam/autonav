@@ -7,12 +7,12 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from autonav.srv import *
 from autonav.msg import coordinate
 
-# Definisci un dizionario per le coordinate delle stanze
-stanze_coordinates = {
+# Create a dictionary to hold all the rooms locations
+rooms_coordinates = {
     "studio": {"x": 5.6, "y": -2.1, "z": 0.0},
-    "salone": {"x": -3.6, "y": 1.0, "z": 0.0},
-    "stanza_da_letto": {"x": 3.25, "y": 1.3, "z": 0.0},
-    "bagno": {"x": 1.7, "y": 4.1, "z": 0.0},
+    "living_room": {"x": -3.6, "y": 1.0, "z": 0.0},
+    "bedroom": {"x": 3.25, "y": 1.3, "z": 0.0},
+    "bathroom": {"x": 1.7, "y": 4.1, "z": 0.0},
 }
 
 x1 = 0.0
@@ -63,7 +63,7 @@ def navigate_to_room(room_name):
     goal.target_pose.header.stamp = rospy.Time.now()
 
     # Utilizza il dizionario per ottenere le coordinate della stanza specificata
-    room_coordinates = stanze_coordinates.get(room_name)
+    room_coordinates = rooms_coordinates.get(room_name)
     if room_coordinates:
         goal.target_pose.pose.position.x = room_coordinates["x"]
         goal.target_pose.pose.position.y = room_coordinates["y"]
@@ -76,9 +76,6 @@ def navigate_to_room(room_name):
     goal.target_pose.pose.orientation.z = 0.0
     goal.target_pose.pose.orientation.w = 1
 
-    
-    
-    
     print(f"getting the robot initial position")
     data = rospy.get_param('initial_position')
     global x1, y1
