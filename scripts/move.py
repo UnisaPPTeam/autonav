@@ -5,14 +5,14 @@ import rospy
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from autonav.srv import *
-from autonav.msg import cordinate
+from autonav.msg import coordinate
 
 # Definisci un dizionario per le coordinate delle stanze
 stanze_coordinates = {
     "studio": {"x": 5.6, "y": -2.1, "z": 0.0},
-    "salone": {"x": -4.45, "y": -0.45, "z": 0.0},
+    "salone": {"x": -3.6, "y": 1.0, "z": 0.0},
     "stanza_da_letto": {"x": 3.25, "y": 1.3, "z": 0.0},
-    "bagno": {"x": -0.10, "y": 2.8, "z": 0.0},
+    "bagno": {"x": 1.7, "y": 4.1, "z": 0.0},
 }
 
 x1 = 0.0
@@ -32,11 +32,16 @@ def get_distance(feedback):
         print("Service call failed: %s" %e)
 
 # Callback definition
-def active_cb(extra):
+def active_cb():
     rospy.loginfo("Goal pose being processed")
 
 def feedback_cb(feedback):
     print(f"the current robot distance from the starting point is {get_distance(feedback)}")
+    position = coordinate()
+    position.x = feedback.base_position.pose.position.x
+    position.y = feedback.base_position.pose.position.y
+    position.z = feedback.base_position.pose.position.z
+    pub.publish(position)
     return
 
 def done_cb(status, result):
@@ -66,12 +71,14 @@ def navigate_to_room(room_name):
     else:
         rospy.logerr(f"Room '{room_name}' not found in the coordinate dictionary.")
         return
-
     goal.target_pose.pose.orientation.x = 0.0
     goal.target_pose.pose.orientation.y = 0.0
     goal.target_pose.pose.orientation.z = 0.0
     goal.target_pose.pose.orientation.w = 1
 
+    
+    
+    
     print(f"getting the robot initial position")
     data = rospy.get_param('initial_position')
     global x1, y1
@@ -80,12 +87,26 @@ def navigate_to_room(room_name):
   
     print(f"Starting position set: {x1},{y1}")
     navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
+    
+    rate = rospy.Rate(1)  # posiamo regolare la frequenza di pubblicazione
+    while not rospy.is_shutdown() and not navclient.wait_for_result():
+        coordinate_msg = coordinate()
+        coordinate_msg.x = goal.target_pose.pose.position.x
+        coordinate_msg.y = goal.target_pose.pose.position.y
+        coordinate_msg.z = goal.target_pose.pose.position.z
+        pub.publish(coordinate_msg)
+        rate.sleep()
+
+    if navclient.get_state() == 3:  # Stato 3 indica che il goal è stato raggiunto
+        rospy.loginfo("Goal reached")
+    else:
+        rospy.logerr("Action server not available or goal not reached")
     finished = navclient.wait_for_result()
 
-    if not finished:
-        rospy.logerr("Action server not available")
-    else:
-        rospy.loginfo(navclient.get_result())
+    #if not finished:
+    #   rospy.logerr("Action server not available")
+    #else:
+    #    rospy.loginfo(navclient.get_result())
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -93,4 +114,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     room_name = sys.argv[1]
+    
+    pub = rospy.Publisher('/robotinitialposition', coordinate, queue_size=30)
+    
     navigate_to_room(room_name)
