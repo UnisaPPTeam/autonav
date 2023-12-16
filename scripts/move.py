@@ -21,9 +21,7 @@ y1 = 0.0
 def get_distance(feedback):
     rospy.wait_for_service("calculate_distance")
     try:
-        print("distance calculation service init")
         distance = rospy.ServiceProxy('calculate_distance', calculate_distance)
-        print("getting current node location")
         x2 = feedback.base_position.pose.position.x
         y2 = feedback.base_position.pose.position.y
         resp1 = distance(x1, y1, x2, y2)
@@ -85,25 +83,12 @@ def navigate_to_room(room_name):
     print(f"Starting position set: {x1},{y1}")
     navclient.send_goal(goal, done_cb, active_cb, feedback_cb)
     
-    rate = rospy.Rate(1)  # posiamo regolare la frequenza di pubblicazione
-    while not rospy.is_shutdown() and not navclient.wait_for_result():
-        coordinate_msg = coordinate()
-        coordinate_msg.x = goal.target_pose.pose.position.x
-        coordinate_msg.y = goal.target_pose.pose.position.y
-        coordinate_msg.z = goal.target_pose.pose.position.z
-        pub.publish(coordinate_msg)
-        rate.sleep()
+    finished = navclient.wait_for_result(timeout=rospy.Duration(0.01))
 
-    if navclient.get_state() == 3:  # Stato 3 indica che il goal è stato raggiunto
-        rospy.loginfo("Goal reached")
+    if not finished:
+        rospy.logerr("Action server not available")
     else:
-        rospy.logerr("Action server not available or goal not reached")
-    finished = navclient.wait_for_result()
-
-    #if not finished:
-    #   rospy.logerr("Action server not available")
-    #else:
-    #    rospy.loginfo(navclient.get_result())
+        rospy.loginfo(navclient.get_result())
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

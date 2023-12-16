@@ -9,8 +9,9 @@ def coordinates_callback(msg):
 
 if __name__ == "__main__":
     rospy.init_node('coordinate_subscriber_node')
-
+    print("Waiting for coordinates")
     # Iscrizione al topic "robot_coordinates"
     rospy.Subscriber("/robotinitialposition", coordinate, coordinates_callback)
 
     rospy.spin()
+    
